@@ -230,7 +230,8 @@ def predict_frost(data: MicroclimateInput):
     """
     try:
         predictor = get_tabpfn()
-        result = predictor.predict_frost_risk(data.dict())
+        input_dict = data.model_dump() if hasattr(data, "model_dump") else data.dict()
+        result = predictor.predict_frost_risk(input_dict)
         
         # Calculate suitability scores for each crop
         crop_suitability = []
@@ -285,7 +286,8 @@ def generate_garden_plan(req: GeneratePlanRequest):
     """
     try:
         predictor = get_tabpfn()
-        frost_data = predictor.predict_frost_risk(req.microclimate.dict())
+        microclimate_dict = req.microclimate.model_dump() if hasattr(req.microclimate, "model_dump") else req.microclimate.dict()
+        frost_data = predictor.predict_frost_risk(microclimate_dict)
         
         # Filter selected crops
         chosen_crops = [c for c in crops_data if c["id"] in req.selected_crop_ids]
@@ -348,7 +350,7 @@ def add_journal_entry(entry: JournalEntry):
             entries = []
 
     new_id = f"entry-{int(time.time())}"
-    entry_dict = entry.dict()
+    entry_dict = entry.model_dump() if hasattr(entry, "model_dump") else entry.dict()
     entry_dict["id"] = new_id
     entries.insert(0, entry_dict)
 
