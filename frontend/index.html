@@ -3,28 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FrostSprout | Touch Grass with Open-Source AI</title>
-  <meta name="description" content="Hyperlocal garden intelligence powered by Tabular ML and Google Gemma. Know exactly what to plant before frost, then put your phone in your pocket and touch grass.">
-  
-  <!-- Modern Typography -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  
+  <title>FrostSprout | Touch Grass Garden AI</title>
+  <meta name="description" content="Hyperlocal garden intelligence powered by Tabular ML and Google Gemma. Know what to plant before frost, then put your phone in your pocket and touch grass.">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="theme-dark">
+<body class="theme-light">
 
-  <!-- Ambient Animated Botanical Background -->
-  <div class="ambient-glow ambient-glow-1"></div>
-  <div class="ambient-glow ambient-glow-2"></div>
-  <div class="ambient-glow ambient-glow-3"></div>
-
-  <!-- Navigation Bar -->
+  <!-- Header: app name + short tagline + model badge + clean action triggers -->
   <header class="app-header" id="appHeader">
     <div class="header-container">
       <div class="brand">
-        <div class="brand-icon">
+        <div class="brand-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12A10 10 0 0 1 12 2Z"/>
             <path d="M12 18v-7"/>
@@ -39,273 +28,236 @@
       </div>
 
       <div class="header-badges">
-        <span class="badge badge-fest">
-          <span class="badge-dot"></span> Hacktoberfest 2026 Week 1
-        </span>
-        <span class="badge badge-tabpfn">
-          <svg class="mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-          <span id="headerModelBadge">RandomForest (TabPFN unavailable)</span>
-        </span>
-        <span class="badge badge-gemma">
-          <svg class="mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
-          Google Gemma
+        <span class="badge badge-model" id="headerModelBadgeContainer">
+          <span class="badge-label">Model:</span>
+          <strong id="headerModelBadge">RandomForest (TabPFN unavailable)</strong>
         </span>
       </div>
 
       <div class="header-actions">
-        <button class="btn btn-ghost" id="btnOpenBenchmark">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+        <button class="btn btn-outline" id="btnOpenBenchmark" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
           <span>AI Benchmark</span>
         </button>
-        <button class="btn btn-primary" id="btnQuickAudioWalk">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <button class="btn btn-outline" id="btnQuickAudioWalk" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           <span>Hands-Free Audio</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Hero Banner -->
   <main class="main-content">
-    <section class="hero-section">
-      <div class="hero-left">
-        <div class="theme-callout">
-          <span class="theme-pill">🌱 Theme: Touch Grass</span>
-          <span class="theme-desc">"Make the screen the shortest part of the experience."</span>
-        </div>
-        <h1 class="hero-title">
-          Know What to Dig Today.<br>
-          <span class="gradient-text">Then Put Your Phone Away.</span>
-        </h1>
-        <p class="hero-subtitle">
-          Hyperlocal tabular microclimate forecasting predicts your autumn frost window. <strong>Google Gemma</strong> builds your hands-in-the-dirt action cards and eyes-up audio guide.
-        </p>
-        
-        <div class="hero-metrics">
-          <div class="metric-pill">
-            <span class="metric-val" id="heroStreakDisplay">45m</span>
-            <span class="metric-lbl">Outdoor Dirt Time Logged</span>
-          </div>
-          <div class="metric-divider"></div>
-          <div class="metric-pill">
-            <span class="metric-val" id="heroDaysDisplay">~12 Days</span>
-            <span class="metric-lbl">Until First Killing Frost</span>
-          </div>
-          <div class="metric-divider"></div>
-          <div class="metric-pill">
-            <span class="metric-val text-accent" id="heroStatusDisplay">Safe Window</span>
-            <span class="metric-lbl">Current Planting Status</span>
-          </div>
-        </div>
-      </div>
+    <div class="main-container">
 
-      <div class="hero-right">
-        <!-- Interactive Frost Radar Widget -->
-        <div class="frost-card glass-panel" id="frostRadarCard">
-          <div class="card-header">
-            <div class="card-header-title">
-              <span class="status-indicator status-pulse" id="statusPulseDot"></span>
-              <span class="panel-heading">Tabular Frost Horizon</span>
-            </div>
-            <span class="badge-micro badge-warn" id="modelBadge">RandomForest (TabPFN unavailable)</span>
-          </div>
-
-          <div class="frost-gauge-container">
-            <div class="gauge-ring" id="gaugeRing">
-              <svg viewBox="0 0 100 100" class="gauge-svg">
-                <circle class="gauge-bg" cx="50" cy="50" r="42"/>
-                <circle class="gauge-bar" id="gaugeBar" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="180"/>
-              </svg>
-              <div class="gauge-content">
-                <span class="gauge-percentage" id="frostProbPercent">32%</span>
-                <span class="gauge-label">Frost Probability</span>
-              </div>
-            </div>
-
-            <div class="frost-readouts">
-              <div class="readout-item">
-                <span class="readout-label">Threat Level</span>
-                <span class="readout-value" id="threatLevelText">Low Freeze Risk</span>
-              </div>
-              <div class="readout-item">
-                <span class="readout-label">Ground Frost In</span>
-                <span class="readout-value" id="daysToFrostText">12.4 Days</span>
-              </div>
-              <div class="readout-item">
-                <span class="readout-label">Radiative Chill</span>
-                <span class="readout-value badge-safe" id="radiativeAnomalyText">Normal Night</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="frost-alert-box" id="frostAlertBox">
-            <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <p id="frostActionSummaryText">
-              Optimal autumn soil temperatures. Excellent window to plant hardneck garlic and sow cold-hardy winter greens.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Interactive Workspace Grid -->
-    <div class="workspace-grid">
-      
-      <!-- Left Column: Microclimate Controller -->
-      <section class="panel glass-panel controller-panel">
-        <div class="panel-header">
-          <div class="panel-header-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg>
-          </div>
+      <!-- 1. Primary action area: Use live weather (Panipat) as the main button, with sliders in a collapsible section -->
+      <section class="card action-card" aria-labelledby="liveWeatherHeading">
+        <div class="action-card-header">
           <div>
-            <h2 class="panel-title">1. Your Microclimate</h2>
-            <p class="panel-subtitle">Feed your local conditions to the tabular frost model</p>
+            <h2 class="card-title" id="liveWeatherHeading">Garden Weather & Microclimate</h2>
+            <p class="card-subtitle">Real-time Open-Meteo telemetry with what-if freeze simulation</p>
+          </div>
+          <div class="action-meta-badges">
+            <span class="badge badge-mode" id="weatherModeBadge">Mode: Simulated</span>
+            <span class="badge badge-warn" id="defaultedNoticeBadge" style="display: none;">Soil temp & pressure (default, not measured)</span>
           </div>
         </div>
 
-        <!-- Live Weather Telemetry & What-If Mode -->
-        <div class="live-weather-card glass-panel" style="margin-bottom: 1.25rem; padding: 1rem; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px; background: rgba(18, 30, 23, 0.65);">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
-            <div>
-              <div style="font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
-                <span class="status-indicator status-pulse" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
-                <span>Live Microclimate Telemetry</span>
-                <span class="badge badge-fest" id="weatherModeBadge" style="font-size: 0.72rem; padding: 2px 8px;">Mode: Simulated</span>
-              </div>
-              <p class="panel-subtitle" style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #a3b899;">
-                <span id="weatherLocationText">Location: Manual Sliders</span> • <span id="weatherFetchTimeText">Simulated</span>
-              </p>
+        <div class="live-action-strip">
+          <button class="btn btn-primary btn-lg" id="btnLiveWeatherPanipat" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Use live weather (Panipat)</span>
+          </button>
+          <div class="weather-location-info">
+            <span id="weatherLocationText">Location: Manual Sliders</span>
+            <span class="meta-separator">•</span>
+            <span id="weatherFetchTimeText">Simulated</span>
+          </div>
+        </div>
+
+        <!-- Honesty note and telemetry details -->
+        <div class="note-box" id="liveWeatherNoteBox">
+          <div class="note-content">
+            <span id="liveWeatherDisclaimer">Note: Frost scenarios are simulated; live weather is real.</span>
+          </div>
+          <div class="telemetry-breakdown" id="liveWeatherDetails" style="display: none;">
+            <span id="liveTelemetryBreakdown"></span>
+          </div>
+        </div>
+
+        <!-- Live weather error box (visible on network failure) -->
+        <div class="error-box" id="liveWeatherErrorBox" style="display: none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="liveWeatherErrorText">Open-Meteo unreachable. Falling back to manual sliders.</span>
+        </div>
+
+        <!-- Collapsible What-if simulator section -->
+        <details class="what-if-details" id="whatIfDetails">
+          <summary class="what-if-summary">
+            <span class="what-if-summary-title">What-if simulator</span>
+            <span class="what-if-summary-hint">Adjust manual sliders for custom freeze scenarios</span>
+          </summary>
+          <div class="what-if-body">
+            <div class="form-group preset-group">
+              <label class="form-label" for="zonePresetSelect">Simulated Preset Scenario</label>
+              <select id="zonePresetSelect" class="form-select">
+                <option value="zone-6a">Midwest Prairie (Zone 6a - Normal Autumn) [Simulated]</option>
+                <option value="zone-4b">Northern Valley (Zone 4b - Early Freeze Imminent) [Simulated]</option>
+                <option value="zone-5b">Appalachian Foothills (Zone 5b - Cold Mountain Valley) [Simulated]</option>
+                <option value="zone-7b">Coastal Lowland (Zone 7b - Extended Warm Fall) [Simulated]</option>
+                <option value="zone-8b">Pacific Maritime (Zone 8b - Wet Mild Winter) [Simulated]</option>
+                <option value="custom">Custom Location & Backyard Microclimate [Simulated]</option>
+              </select>
             </div>
-            <button class="btn btn-secondary" id="btnLiveWeatherPanipat" type="button" style="white-space: nowrap;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; margin-right: 6px;"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
-              <span>Use live weather (Panipat)</span>
+
+            <div class="sliders-grid">
+              <!-- Min Temp -->
+              <div class="slider-group">
+                <div class="slider-header">
+                  <label for="minTempSlider" class="slider-label">Overnight Low Temp</label>
+                  <span class="slider-value" id="minTempVal">3.5°C</span>
+                </div>
+                <input type="range" id="minTempSlider" min="-10" max="45" step="0.5" value="3.5" class="range-slider">
+              </div>
+
+              <!-- Soil Temp -->
+              <div class="slider-group">
+                <div class="slider-header">
+                  <label for="soilTempSlider" class="slider-label">Soil Temp (5cm Depth)</label>
+                  <span class="slider-value" id="soilTempVal">8.0°C (default, not measured)</span>
+                </div>
+                <input type="range" id="soilTempSlider" min="0" max="45" step="0.5" value="8.0" class="range-slider">
+              </div>
+
+              <!-- Cloud Cover -->
+              <div class="slider-group">
+                <div class="slider-header">
+                  <label for="cloudSlider" class="slider-label">Night Cloud Cover</label>
+                  <span class="slider-value" id="cloudVal">15% (Clear)</span>
+                </div>
+                <input type="range" id="cloudSlider" min="0" max="100" step="5" value="15" class="range-slider">
+                <div class="slider-hint">Observational heuristic: Night skies &lt;20% accelerate radiative ground chill.</div>
+              </div>
+
+              <!-- Elevation -->
+              <div class="slider-group">
+                <div class="slider-header">
+                  <label for="elevSlider" class="slider-label">Garden Elevation</label>
+                  <span class="slider-value" id="elevVal">250m</span>
+                </div>
+                <input type="range" id="elevSlider" min="0" max="3000" step="5" value="250" class="range-slider">
+              </div>
+
+              <!-- Humidity -->
+              <div class="slider-group">
+                <div class="slider-header">
+                  <label for="humiditySlider" class="slider-label">Relative Humidity</label>
+                  <span class="slider-value" id="humidityVal">65%</span>
+                </div>
+                <input type="range" id="humiditySlider" min="10" max="100" step="5" value="65" class="range-slider">
+              </div>
+
+              <!-- Day of Year -->
+              <div class="slider-group">
+                <div class="slider-header">
+                  <label for="doySlider" class="slider-label">Day of Year</label>
+                  <span class="slider-value" id="doyVal">Oct 10 (DOY 283)</span>
+                </div>
+                <input type="range" id="doySlider" min="1" max="366" step="1" value="283" class="range-slider">
+              </div>
+            </div>
+
+            <button class="btn btn-secondary btn-block" id="btnRunPrediction" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <span>Run Microclimate Prediction</span>
             </button>
           </div>
-
-          <!-- Live Weather Note and Defaulted Features Status -->
-          <div id="liveWeatherNoteBox" style="margin-top: 0.75rem; padding: 0.6rem 0.8rem; border-radius: 8px; background: rgba(0, 0, 0, 0.25); font-size: 0.8rem; color: #cbd5e1; line-height: 1.4;">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;">
-              <span id="liveWeatherDisclaimer">💡 <strong>Note:</strong> Frost scenarios are simulated; live weather is real.</span>
-              <span id="defaultedNoticeBadge" style="font-size: 0.72rem; color: #f59e0b; display: none;">⚠️ Soil temp & pressure defaulted</span>
-            </div>
-            <div id="liveWeatherDetails" style="margin-top: 0.35rem; display: none; font-size: 0.75rem; color: #94a3b8;">
-              <span id="liveTelemetryBreakdown"></span>
-            </div>
-          </div>
-
-          <!-- Unreachable / Error Message Box (Visible only on failure) -->
-          <div id="liveWeatherErrorBox" style="display: none; margin-top: 0.75rem; padding: 0.65rem 0.85rem; border-radius: 8px; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; font-size: 0.8rem;">
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span id="liveWeatherErrorText">Open-Meteo unreachable. Falling back to manual sliders.</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="preset-selector">
-          <label class="input-label" for="zonePresetSelect">Simulated Preset (What-If):</label>
-          <select id="zonePresetSelect" class="form-select">
-            <option value="zone-6a">Midwest Prairie (Zone 6a - Normal Autumn) [Simulated]</option>
-            <option value="zone-4b">Northern Valley (Zone 4b - Early Freeze Imminent) [Simulated]</option>
-            <option value="zone-5b">Appalachian Foothills (Zone 5b - Cold Mountain Valley) [Simulated]</option>
-            <option value="zone-7b">Coastal Lowland (Zone 7b - Extended Warm Fall) [Simulated]</option>
-            <option value="zone-8b">Pacific Maritime (Zone 8b - Wet Mild Winter) [Simulated]</option>
-            <option value="custom">Custom Location & Backyard Microclimate [Simulated]</option>
-          </select>
-        </div>
-
-        <div class="sliders-grid">
-          <!-- Min Temp -->
-          <div class="slider-group">
-            <div class="slider-header">
-              <label for="minTempSlider" class="slider-label">Overnight Low Temp</label>
-              <span class="slider-value" id="minTempVal">3.5°C</span>
-            </div>
-            <input type="range" id="minTempSlider" min="-10" max="45" step="0.5" value="3.5" class="range-slider">
-          </div>
-
-          <!-- Soil Temp -->
-          <div class="slider-group">
-            <div class="slider-header">
-              <label for="soilTempSlider" class="slider-label">Soil Temp (5cm Depth)</label>
-              <span class="slider-value" id="soilTempVal">8.0°C (default, not measured)</span>
-            </div>
-            <input type="range" id="soilTempSlider" min="0" max="45" step="0.5" value="8.0" class="range-slider">
-          </div>
-
-          <!-- Cloud Cover (Radiative chilling factor) -->
-          <div class="slider-group">
-            <div class="slider-header">
-              <label for="cloudSlider" class="slider-label">Night Cloud Cover</label>
-              <span class="slider-value" id="cloudVal">15% (Clear)</span>
-            </div>
-            <input type="range" id="cloudSlider" min="0" max="100" step="5" value="15" class="range-slider">
-            <div class="slider-hint">Commonly said heuristic: Clear skies (&lt;20%) accelerate radiative cooling (unverified empirically).</div>
-          </div>
-
-          <!-- Elevation -->
-          <div class="slider-group">
-            <div class="slider-header">
-              <label for="elevSlider" class="slider-label">Garden Elevation</label>
-              <span class="slider-value" id="elevVal">250m</span>
-            </div>
-            <input type="range" id="elevSlider" min="0" max="3000" step="5" value="250" class="range-slider">
-          </div>
-
-          <!-- Humidity -->
-          <div class="slider-group">
-            <div class="slider-header">
-              <label for="humiditySlider" class="slider-label">Relative Humidity</label>
-              <span class="slider-value" id="humidityVal">65%</span>
-            </div>
-            <input type="range" id="humiditySlider" min="10" max="100" step="5" value="65" class="range-slider">
-          </div>
-
-          <!-- Day of Year -->
-          <div class="slider-group">
-            <div class="slider-header">
-              <label for="doySlider" class="slider-label">Day of Year</label>
-              <span class="slider-value" id="doyVal">Oct 10 (DOY 283)</span>
-            </div>
-            <input type="range" id="doySlider" min="1" max="366" step="1" value="283" class="range-slider">
-          </div>
-        </div>
-
-        <button class="btn btn-primary btn-block btn-pulse" id="btnRunPrediction">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          <span>Run Microclimate Prediction</span>
-        </button>
+        </details>
       </section>
 
-      <!-- Center & Right: Crop Matrix & Planting Intelligence -->
-      <section class="panel glass-panel crops-panel">
-        <div class="panel-header">
-          <div class="panel-header-icon icon-emerald">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12A10 10 0 0 1 12 2Z"/><path d="M12 18v-7"/><path d="M9 14c1.5-1.5 3-1.5 3-3 0-1.5 1.5-1.5 3-3"/><path d="M12 11c-1.5-1.5-3-1.5-3-3"/></svg>
+      <!-- 2. Result card: risk level (colour-coded), frost probability, days until frost, action summary -->
+      <section class="card result-card" id="frostRadarCard" aria-labelledby="frostForecastHeading">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="status-indicator status-pulse" id="statusPulseDot"></span>
+            <h2 class="card-title" id="frostForecastHeading">Frost Forecast Result</h2>
           </div>
-          <div class="panel-header-flex">
-            <div>
-              <h2 class="panel-title">2. What to Plant This Week</h2>
-              <p class="panel-subtitle">Ranked by tabular germination probability & frost runway</p>
+          <span class="badge badge-model" id="modelBadge">RandomForest (TabPFN unavailable)</span>
+        </div>
+
+        <div class="result-metrics-grid">
+          <div class="result-metric-card">
+            <span class="metric-label">Risk Level</span>
+            <span class="metric-value metric-threat" id="threatLevelText">Low Freeze Risk</span>
+          </div>
+
+          <div class="result-metric-card">
+            <span class="metric-label">Frost Probability</span>
+            <div class="prob-wrapper">
+              <span class="metric-value" id="frostProbPercent">32%</span>
+              <div class="gauge-ring" id="gaugeRing">
+                <svg viewBox="0 0 100 100" class="gauge-svg" aria-hidden="true">
+                  <circle class="gauge-bg" cx="50" cy="50" r="42"/>
+                  <circle class="gauge-bar" id="gaugeBar" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="180"/>
+                </svg>
+              </div>
             </div>
-            <div class="filter-tabs" id="categoryFilterTabs">
-              <button class="tab-btn active" data-filter="all">All Crops</button>
-              <button class="tab-btn" data-filter="Alliums">Alliums</button>
-              <button class="tab-btn" data-filter="Greens">Greens</button>
-              <button class="tab-btn" data-filter="Root Vegetables">Roots</button>
-              <button class="tab-btn" data-filter="Brassicas">Brassicas</button>
-            </div>
+          </div>
+
+          <div class="result-metric-card">
+            <span class="metric-label">Days Until Freezing</span>
+            <span class="metric-value" id="daysToFrostText">12.4 Days</span>
+          </div>
+
+          <div class="result-metric-card">
+            <span class="metric-label">Radiative Chill</span>
+            <span class="metric-value badge-safe" id="radiativeAnomalyText">Normal Night</span>
+          </div>
+        </div>
+
+        <div class="frost-alert-box" id="frostAlertBox">
+          <p id="frostActionSummaryText">Optimal autumn soil temperatures. Excellent window to plant hardneck garlic and sow cold-hardy winter greens.</p>
+        </div>
+
+        <div class="result-meta-strip">
+          <div class="meta-stat">
+            <span class="meta-label">Planting Status:</span>
+            <strong id="heroStatusDisplay">Safe Window</strong>
+          </div>
+          <div class="meta-stat">
+            <span class="meta-label">Window:</span>
+            <strong id="heroDaysDisplay">~12 Days</strong>
+          </div>
+          <div class="meta-stat">
+            <span class="meta-label">Dirt Time Logged:</span>
+            <strong id="heroStreakDisplay">45m</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Crops: responsive grid of cards (score, status, tip). Defaulted soil temp clearly labelled -->
+      <section class="card crops-card" aria-labelledby="cropsHeading">
+        <div class="card-header crops-header">
+          <div>
+            <h2 class="card-title" id="cropsHeading">What to Plant This Week</h2>
+            <p class="card-subtitle">Ranked by germination suitability and frost runway</p>
+          </div>
+          <div class="filter-tabs" id="categoryFilterTabs" role="tablist">
+            <button class="tab-btn active" data-filter="all" type="button" role="tab">All Crops</button>
+            <button class="tab-btn" data-filter="Alliums" type="button" role="tab">Alliums</button>
+            <button class="tab-btn" data-filter="Greens" type="button" role="tab">Greens</button>
+            <button class="tab-btn" data-filter="Root Vegetables" type="button" role="tab">Roots</button>
+            <button class="tab-btn" data-filter="Brassicas" type="button" role="tab">Brassicas</button>
           </div>
         </div>
 
         <!-- Crop List Notice -->
-        <div class="crop-list-notice" style="margin: 0.75rem 0; padding: 0.65rem 0.85rem; border-radius: 8px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); font-size: 0.78rem; color: #fde68a; line-height: 1.4;">
-          ⚠️ <strong>Notice:</strong> Soil temperature is an assumed default. Crop data is for temperate climates, not tuned for Panipat.
+        <div class="crop-list-notice" id="cropListNotice">
+          Notice: Soil temperature is an assumed default. Crop data is for temperate climates, not tuned for Panipat.
         </div>
 
         <!-- Crops Grid -->
         <div class="crops-grid" id="cropsGrid">
-          <!-- Dynamically populated crop cards -->
           <div class="loading-state">
             <div class="spinner"></div>
             <span>Analyzing soil temperature and cold-hardiness envelopes...</span>
@@ -317,163 +269,149 @@
             <span class="selection-count" id="selectedCountDisplay">2 crops selected</span>
             <span class="selection-sub">Ready to generate your hands-in-dirt outdoor plan</span>
           </div>
-          <button class="btn btn-accent" id="btnGeneratePlan">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <button class="btn btn-primary" id="btnGeneratePlan" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             <span>Generate Gemma Outdoor Action Plan</span>
           </button>
         </div>
       </section>
 
+      <!-- 4. Gemma plan + audio button in its own card; show plan source label -->
+      <section class="card plan-card-section" id="outdoorPlanSection" aria-labelledby="outdoorPlanHeading">
+        <div class="card-header plan-header">
+          <div>
+            <h2 class="card-title" id="outdoorPlanHeading">Gemma Outdoor Action Guide</h2>
+            <p class="card-subtitle">Take 30 seconds to review, then pocket your phone and step outside.</p>
+          </div>
+          <div class="plan-source-badge" id="planSourceBadge">
+            <span class="badge badge-source">
+              <span class="badge-label">Source:</span>
+              <strong id="planSourceValue">Checking model...</strong>
+            </span>
+          </div>
+        </div>
+
+        <div class="plan-content-grid">
+          <!-- Chores Card -->
+          <div class="plan-subcard" id="choresCard">
+            <h3 class="plan-subcard-title">Weekly Outdoor Chores</h3>
+            <div class="chores-list" id="choresList">
+              <!-- Dynamically populated chores -->
+            </div>
+          </div>
+
+          <!-- Touch Grass Sensory & Field Card Exporter -->
+          <div class="plan-subcard" id="sensoryCard">
+            <h3 class="plan-subcard-title">Touch Grass Sensory Cue</h3>
+            <div class="sensory-box" id="sensoryBoxText">
+              "Kneel beside your bed, press your bare fingertips 5cm into the dirt. Smell the autumn earth. Cold soil holds fungal richness that tells you microbes are ready for winter rest."
+            </div>
+
+            <div class="companion-synergy-box" id="companionSynergyBox">
+              <div class="synergy-heading">Bio-Synergy Companion Advantage</div>
+              <div class="synergy-content" id="synergyContentText">
+                Garlic sulfur suppresses soil-borne nematodes, protecting delicate winter spinach crowns.
+              </div>
+            </div>
+
+            <div class="card-export-actions">
+              <button class="btn btn-outline" id="btnPrintPocketCard" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                <span>Print Pocket Field Card</span>
+              </button>
+              <button class="btn btn-outline" id="btnLogOutdoorSession" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                <span>Log Outdoor Garden Time</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hands-Free Audio Tour Bar -->
+        <div class="audio-tour-bar" id="audioTourBar">
+          <div class="audio-player-controls">
+            <button class="audio-play-btn" id="btnAudioPlay" type="button" aria-label="Play or Pause Garden Audio Walkthrough">
+              <svg id="audioPlayIcon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </button>
+            
+            <div class="audio-track-info">
+              <span class="track-title" id="audioTrackTitle">Garden Walkthrough: Frost Prep & Planting Session</span>
+              <div class="audio-waveform" id="audioWaveform" aria-hidden="true">
+                <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+                <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+                <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="audio-tip">
+            <span>Put on headphones, slide phone into pocket, step into dirt.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Proof of Dirt Garden Journal -->
+      <section class="card journal-section" id="journalSection" aria-labelledby="journalHeading">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" id="journalHeading">Proof of Dirt Garden Log</h2>
+            <p class="card-subtitle">Document outdoor time, touch grass streaks, and soil texture</p>
+          </div>
+          <span class="badge badge-streak" id="streakBadgeText">3 Day Streak</span>
+        </div>
+
+        <div class="journal-grid">
+          <form class="journal-form" id="journalForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="journalMinutesInput" class="form-label">Minutes Spent Outside Today</label>
+                <input type="number" id="journalMinutesInput" class="form-input" min="5" max="480" value="45" required>
+              </div>
+              <div class="form-group">
+                <label for="journalSoilFeelSelect" class="form-label">How Did the Soil Feel?</label>
+                <select id="journalSoilFeelSelect" class="form-select">
+                  <option value="Cool, crumbly dark loam">Cool, crumbly dark loam</option>
+                  <option value="Damp and chilled clay">Damp and chilled clay</option>
+                  <option value="Sandy and well-draining">Sandy and well-draining</option>
+                  <option value="Light morning crust frost">Light morning crust frost</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="journalNotesInput" class="form-label">Sensory Notes from the Garden</label>
+              <textarea id="journalNotesInput" class="form-textarea" rows="2" placeholder="Tucked 24 garlic cloves into mulch. Soil was dark and cool."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-secondary" id="btnSaveJournal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              <span>Record Outdoor Dirt Session</span>
+            </button>
+          </form>
+
+          <div class="journal-history" id="journalHistoryContainer">
+            <div class="history-header">
+              <span>Recent Outdoor Sessions</span>
+            </div>
+            <div class="history-list" id="journalHistoryList">
+              <!-- Dynamically populated journal entries -->
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
-
-    <!-- Outdoor Action Plan & Hands-Free Audio Companion Section -->
-    <section class="plan-section glass-panel" id="outdoorPlanSection">
-      <div class="plan-header-banner">
-        <div class="plan-badge">
-          <span class="badge-icon">🧤</span> Hands in Dirt, Phone in Pocket
-        </div>
-        <div class="plan-source-badge" id="planSourceBadge">
-          <span>Source:</span> <strong id="planSourceValue">Checking model...</strong>
-        </div>
-        <h2 class="plan-title">Gemma Outdoor Action Guide & Audio Companion</h2>
-        <p class="plan-desc">Take 30 seconds to review, then pocket your phone and step outside into the garden.</p>
-      </div>
-
-      <div class="plan-content-grid">
-        <!-- Chores Card -->
-        <div class="plan-card" id="choresCard">
-          <div class="plan-card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-            <span>Weekly Outdoor Physical Chores</span>
-          </div>
-          <div class="chores-list" id="choresList">
-            <!-- Dynamically populated chores -->
-          </div>
-        </div>
-
-        <!-- Touch Grass Sensory & Field Card Exporter -->
-        <div class="plan-card" id="sensoryCard">
-          <div class="plan-card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20"/><path d="M20 12v8H4v-8"/><path d="m4 4 16 0"/></svg>
-            <span>Touch Grass Sensory Cue</span>
-          </div>
-          <div class="sensory-box" id="sensoryBoxText">
-            "Kneel beside your bed, press your bare fingertips 5cm into the dirt. Smell the autumn earth. Cold soil holds fungal richness that tells you microbes are ready for winter rest."
-          </div>
-
-          <div class="companion-synergy-box" id="companionSynergyBox">
-            <div class="synergy-heading">Bio-Synergy Companion Advantage</div>
-            <div class="synergy-content" id="synergyContentText">
-              Garlic sulfur suppresses soil-borne nematodes, protecting delicate winter spinach crowns.
-            </div>
-          </div>
-
-          <div class="card-export-actions">
-            <button class="btn btn-outline" id="btnPrintPocketCard">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-              <span>Print Pocket Field Card (No Screen)</span>
-            </button>
-            <button class="btn btn-outline" id="btnLogOutdoorSession">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-              <span>Log Outdoor Garden Time</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Hands-Free Audio Tour Bar -->
-      <div class="audio-tour-bar" id="audioTourBar">
-        <div class="audio-badge">
-          <span class="audio-pulse"></span>
-          <span>Audio Garden Walkthrough (Web Speech API)</span>
-        </div>
-        
-        <div class="audio-player-controls">
-          <button class="audio-play-btn" id="btnAudioPlay" aria-label="Play or Pause Garden Audio Walkthrough">
-            <svg id="audioPlayIcon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          </button>
-          
-          <div class="audio-track-info">
-            <span class="track-title" id="audioTrackTitle">Garden Walkthrough: Frost Prep & Planting Session</span>
-            <div class="audio-waveform" id="audioWaveform">
-              <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
-              <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
-              <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
-            </div>
-          </div>
-        </div>
-
-        <div class="audio-tip">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
-          <span>Put on headphones, slide phone into pocket, step into dirt!</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Proof of Dirt Garden Journal -->
-    <section class="journal-section glass-panel" id="journalSection">
-      <div class="panel-header">
-        <div class="panel-header-icon icon-terracotta">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        </div>
-        <div>
-          <h2 class="panel-title">3. Proof of Dirt Garden Log</h2>
-          <p class="panel-subtitle">Document outdoor time, touch grass streaks, and soil texture</p>
-        </div>
-      </div>
-
-      <div class="journal-grid">
-        <form class="journal-form" id="journalForm">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="journalMinutesInput" class="form-label">Minutes Spent Outside Today:</label>
-              <input type="number" id="journalMinutesInput" class="form-input" min="5" max="480" value="45" required>
-            </div>
-            <div class="form-group">
-              <label for="journalSoilFeelSelect" class="form-label">How Did the Soil Feel?</label>
-              <select id="journalSoilFeelSelect" class="form-select">
-                <option value="Cool, crumbly dark loam">Cool, crumbly dark loam</option>
-                <option value="Damp and chilled clay">Damp and chilled clay</option>
-                <option value="Sandy and well-draining">Sandy and well-draining</option>
-                <option value="Light morning crust frost">Light morning crust frost</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="journalNotesInput" class="form-label">Sensory Notes from the Garden:</label>
-            <textarea id="journalNotesInput" class="form-textarea" rows="2" placeholder="Tucked 24 garlic cloves into the mulch. Smelled woodsmoke from down the road. Cold wind on hands."></textarea>
-          </div>
-
-          <button type="submit" class="btn btn-secondary" id="btnSaveJournal">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            <span>Record Outdoor Dirt Session</span>
-          </button>
-        </form>
-
-        <div class="journal-history" id="journalHistoryContainer">
-          <div class="history-header">
-            <span>Recent Outdoor Touch-Grass Sessions</span>
-            <span class="badge-streak" id="streakBadgeText">🔥 3 Day Streak</span>
-          </div>
-          <div class="history-list" id="journalHistoryList">
-            <!-- Dynamically populated journal entries -->
-          </div>
-        </div>
-      </div>
-    </section>
-
   </main>
 
   <!-- Modal: AI Benchmark Comparison (TabPFN vs XGBoost vs RF) -->
-  <div class="modal-overlay" id="benchmarkModal">
-    <div class="modal-container glass-panel">
+  <div class="modal-overlay" id="benchmarkModal" role="dialog" aria-modal="true" aria-labelledby="benchmarkModalTitle">
+    <div class="modal-container">
       <div class="modal-header">
         <div>
-          <h3 class="modal-title">Model Comparison Benchmark</h3>
+          <h3 class="modal-title" id="benchmarkModalTitle">Model Comparison Benchmark</h3>
           <p class="modal-subtitle">Evaluation on identical synthetic microclimate dataset (seed=42)</p>
         </div>
-        <button class="btn-close" id="btnCloseBenchmark">&times;</button>
+        <button class="btn-close" id="btnCloseBenchmark" type="button" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body" id="benchmarkModalBody">
         <div class="loading-state"><div class="spinner"></div><span>Computing model benchmarks on synthetic data...</span></div>
@@ -481,13 +419,11 @@
     </div>
   </div>
 
-
-
   <!-- Printable Pocket Field Card Template (Hidden until print) -->
   <div class="print-pocket-card" id="printableCardTemplate">
     <div class="pocket-card-inner">
       <div class="pocket-card-header">
-        <div class="pocket-brand">🌿 FrostSprout Pocket Card</div>
+        <div class="pocket-brand">FrostSprout Pocket Card</div>
         <div class="pocket-date" id="printCardDate">Autumn Garden</div>
       </div>
       <div class="pocket-weather-bar" id="printWeatherBar">
@@ -500,18 +436,18 @@
         <!-- Direct 3 chores -->
       </div>
       <div class="pocket-footer">
-        "Put your phone away. Feel the cold soil in your hands. Touch Grass."
+        Put your phone away. Feel the cold soil in your hands. Touch Grass.
       </div>
     </div>
   </div>
 
-  <footer class="app-footer">
+  <footer class="app-footer" id="appFooter">
     <div class="footer-container">
       <div class="footer-left">
-        <span class="footer-brand">FrostSprout</span> — Open-Source AI for the Real World. Built for <strong>Hacktoberfest 2026 Week 1 ("Touch Grass")</strong>.
+        <span class="footer-brand">FrostSprout</span> — Open-Source AI for the Real World. Built for Hacktoberfest 2026 Week 1 ("Touch Grass").
       </div>
       <div class="footer-right">
-        <span>Powered by Open-Source ML & Google Gemma</span>
+        <span>Powered by Prior Labs TabPFN & Google Gemma</span>
       </div>
     </div>
   </footer>
