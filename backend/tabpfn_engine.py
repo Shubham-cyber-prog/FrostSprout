@@ -39,7 +39,8 @@ class FrostPredictor:
         ]
         self.cls_model = None
         self.reg_model = None
-        self.model_type = "TabPFN" if TABPFN_AVAILABLE else "RandomForest"
+        self.model_type = "RandomForest (TabPFN unavailable)"
+        self.tabpfn_status = "TabPFN unavailable"
         self._load_and_train()
 
     def _load_and_train(self):
@@ -70,13 +71,15 @@ class FrostPredictor:
                 print(f"TabPFNClassifier initialization error: {e}. Falling back to Random Forest.")
                 self.cls_model = RandomForestClassifier(n_estimators=100, random_state=42)
                 self.cls_model.fit(X_sub, y_cls_sub)
-                self.model_type = "RandomForest (Fallback: TabPFN unavailable)"
+                self.model_type = "RandomForest (TabPFN unavailable)"
                 self.tabpfn_status = "TabPFN unavailable"
         else:
             self.cls_model = RandomForestClassifier(n_estimators=100, random_state=42)
             self.cls_model.fit(X_sub, y_cls_sub)
-            self.model_type = "RandomForest (Fallback: TabPFN unavailable)"
+            self.model_type = "RandomForest (TabPFN unavailable)"
             self.tabpfn_status = "TabPFN unavailable"
+
+        self.last_prediction_model = self.model_type
 
         # Initialize Regression for exact days to frost
         if TABPFN_AVAILABLE:
@@ -144,8 +147,10 @@ class FrostPredictor:
         min_temp = float(params.get("daily_min_temp_c", 3.5))
         is_radiative_risk = (cloud_cover < 20 and min_temp < 5.0)
 
+        self.last_prediction_model = self.model_type
         return {
             "model_used": self.model_type,
+            "last_prediction_model": self.model_type,
             "tabpfn_status": self.tabpfn_status,
             "frost_probability": round(frost_prob, 3),
             "frost_probability_percent": round(frost_prob * 100, 1),

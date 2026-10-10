@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FrostSprout | Touch Grass with Open-Source AI</title>
-  <meta name="description" content="Hyperlocal garden intelligence powered by Prior Labs TabPFN and Google Gemma. Know exactly what to plant before frost, then put your phone in your pocket and touch grass.">
+  <meta name="description" content="Hyperlocal garden intelligence powered by Tabular ML and Google Gemma. Know exactly what to plant before frost, then put your phone in your pocket and touch grass.">
   
   <!-- Modern Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,7 +44,7 @@
         </span>
         <span class="badge badge-tabpfn">
           <svg class="mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-          Prior Labs TabPFN
+          <span id="headerModelBadge">RandomForest (TabPFN unavailable)</span>
         </span>
         <span class="badge badge-gemma">
           <svg class="mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
@@ -107,7 +107,7 @@
               <span class="status-indicator status-pulse" id="statusPulseDot"></span>
               <span class="panel-heading">Tabular Frost Horizon</span>
             </div>
-            <span class="badge-micro badge-warn" id="modelBadge">Model: Initializing...</span>
+            <span class="badge-micro badge-warn" id="modelBadge">RandomForest (TabPFN unavailable)</span>
           </div>
 
           <div class="frost-gauge-container">
@@ -159,19 +159,58 @@
           </div>
           <div>
             <h2 class="panel-title">1. Your Microclimate</h2>
-            <p class="panel-subtitle">Feed your local conditions to TabPFN's tabular prior</p>
+            <p class="panel-subtitle">Feed your local conditions to the tabular frost model</p>
+          </div>
+        </div>
+
+        <!-- Live Weather Telemetry & What-If Mode -->
+        <div class="live-weather-card glass-panel" style="margin-bottom: 1.25rem; padding: 1rem; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px; background: rgba(18, 30, 23, 0.65);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <div style="font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span class="status-indicator status-pulse" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                <span>Live Microclimate Telemetry</span>
+                <span class="badge badge-fest" id="weatherModeBadge" style="font-size: 0.72rem; padding: 2px 8px;">Mode: Simulated</span>
+              </div>
+              <p class="panel-subtitle" style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #a3b899;">
+                <span id="weatherLocationText">Location: Manual Sliders</span> • <span id="weatherFetchTimeText">Simulated</span>
+              </p>
+            </div>
+            <button class="btn btn-secondary" id="btnLiveWeatherPanipat" type="button" style="white-space: nowrap;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; margin-right: 6px;"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>Use live weather (Panipat)</span>
+            </button>
+          </div>
+
+          <!-- Live Weather Note and Defaulted Features Status -->
+          <div id="liveWeatherNoteBox" style="margin-top: 0.75rem; padding: 0.6rem 0.8rem; border-radius: 8px; background: rgba(0, 0, 0, 0.25); font-size: 0.8rem; color: #cbd5e1; line-height: 1.4;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;">
+              <span id="liveWeatherDisclaimer">💡 <strong>Note:</strong> Frost scenarios are simulated; live weather is real.</span>
+              <span id="defaultedNoticeBadge" style="font-size: 0.72rem; color: #f59e0b; display: none;">⚠️ Soil temp & pressure defaulted</span>
+            </div>
+            <div id="liveWeatherDetails" style="margin-top: 0.35rem; display: none; font-size: 0.75rem; color: #94a3b8;">
+              <span id="liveTelemetryBreakdown"></span>
+            </div>
+          </div>
+
+          <!-- Unreachable / Error Message Box (Visible only on failure) -->
+          <div id="liveWeatherErrorBox" style="display: none; margin-top: 0.75rem; padding: 0.65rem 0.85rem; border-radius: 8px; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; font-size: 0.8rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span id="liveWeatherErrorText">Open-Meteo unreachable. Falling back to manual sliders.</span>
+            </div>
           </div>
         </div>
 
         <div class="preset-selector">
-          <label class="input-label" for="zonePresetSelect">Microclimate Preset:</label>
+          <label class="input-label" for="zonePresetSelect">Simulated Preset (What-If):</label>
           <select id="zonePresetSelect" class="form-select">
-            <option value="zone-6a">Midwest Prairie (Zone 6a - Normal Autumn)</option>
-            <option value="zone-4b">Northern Valley (Zone 4b - Early Freeze Imminent)</option>
-            <option value="zone-5b">Appalachian Foothills (Zone 5b - Cold Mountain Valley)</option>
-            <option value="zone-7b">Coastal Lowland (Zone 7b - Extended Warm Fall)</option>
-            <option value="zone-8b">Pacific Maritime (Zone 8b - Wet Mild Winter)</option>
-            <option value="custom">Custom Location & Backyard Microclimate</option>
+            <option value="zone-6a">Midwest Prairie (Zone 6a - Normal Autumn) [Simulated]</option>
+            <option value="zone-4b">Northern Valley (Zone 4b - Early Freeze Imminent) [Simulated]</option>
+            <option value="zone-5b">Appalachian Foothills (Zone 5b - Cold Mountain Valley) [Simulated]</option>
+            <option value="zone-7b">Coastal Lowland (Zone 7b - Extended Warm Fall) [Simulated]</option>
+            <option value="zone-8b">Pacific Maritime (Zone 8b - Wet Mild Winter) [Simulated]</option>
+            <option value="custom">Custom Location & Backyard Microclimate [Simulated]</option>
           </select>
         </div>
 
@@ -182,7 +221,7 @@
               <label for="minTempSlider" class="slider-label">Overnight Low Temp</label>
               <span class="slider-value" id="minTempVal">3.5°C</span>
             </div>
-            <input type="range" id="minTempSlider" min="-10" max="15" step="0.5" value="3.5" class="range-slider">
+            <input type="range" id="minTempSlider" min="-10" max="45" step="0.5" value="3.5" class="range-slider">
           </div>
 
           <!-- Soil Temp -->
@@ -191,7 +230,7 @@
               <label for="soilTempSlider" class="slider-label">Soil Temp (5cm Depth)</label>
               <span class="slider-value" id="soilTempVal">8.0°C</span>
             </div>
-            <input type="range" id="soilTempSlider" min="0" max="20" step="0.5" value="8.0" class="range-slider">
+            <input type="range" id="soilTempSlider" min="0" max="45" step="0.5" value="8.0" class="range-slider">
           </div>
 
           <!-- Cloud Cover (Radiative chilling factor) -->
@@ -210,7 +249,7 @@
               <label for="elevSlider" class="slider-label">Garden Elevation</label>
               <span class="slider-value" id="elevVal">250m</span>
             </div>
-            <input type="range" id="elevSlider" min="0" max="1500" step="25" value="250" class="range-slider">
+            <input type="range" id="elevSlider" min="0" max="3000" step="5" value="250" class="range-slider">
           </div>
 
           <!-- Humidity -->
@@ -219,16 +258,16 @@
               <label for="humiditySlider" class="slider-label">Relative Humidity</label>
               <span class="slider-value" id="humidityVal">65%</span>
             </div>
-            <input type="range" id="humiditySlider" min="20" max="100" step="5" value="65" class="range-slider">
+            <input type="range" id="humiditySlider" min="10" max="100" step="5" value="65" class="range-slider">
           </div>
 
           <!-- Day of Year -->
           <div class="slider-group">
             <div class="slider-header">
-              <label for="doySlider" class="slider-label">Autumn Date</label>
+              <label for="doySlider" class="slider-label">Day of Year</label>
               <span class="slider-value" id="doyVal">Oct 10 (DOY 283)</span>
             </div>
-            <input type="range" id="doySlider" min="245" max="335" step="1" value="283" class="range-slider">
+            <input type="range" id="doySlider" min="1" max="366" step="1" value="283" class="range-slider">
           </div>
         </div>
 
@@ -247,7 +286,7 @@
           <div class="panel-header-flex">
             <div>
               <h2 class="panel-title">2. What to Plant This Week</h2>
-              <p class="panel-subtitle">Ranked by TabPFN germination probability & frost runway</p>
+              <p class="panel-subtitle">Ranked by tabular germination probability & frost runway</p>
             </div>
             <div class="filter-tabs" id="categoryFilterTabs">
               <button class="tab-btn active" data-filter="all">All Crops</button>
@@ -467,7 +506,7 @@
         <span class="footer-brand">FrostSprout</span> — Open-Source AI for the Real World. Built for <strong>Hacktoberfest 2026 Week 1 ("Touch Grass")</strong>.
       </div>
       <div class="footer-right">
-        <span>Powered by Prior Labs TabPFN & Google Gemma</span>
+        <span>Powered by Open-Source ML & Google Gemma</span>
       </div>
     </div>
   </footer>

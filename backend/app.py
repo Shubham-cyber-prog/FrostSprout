@@ -2,13 +2,15 @@
 FrostSprout FastAPI Application
 Open-Source AI Garden Planner & Pocket Field Companion
 Theme: 'Touch Grass' - Screen in pocket, hands in the soil.
-Combines Prior Labs' TabPFN (tabular foundation model) + Google Gemma (open-weight agent) + Web Speech audio.
+Combines Tabular ML (TabPFN with Random Forest fallback) + Google Gemma (open-weight agent) + Web Speech audio.
 """
 
 import os
 import json
 import time
+from datetime import datetime
 from typing import List, Optional
+import requests
 from fastapi import FastAPI, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -17,7 +19,7 @@ from pydantic import BaseModel, Field
 # App initialization
 app = FastAPI(
     title="FrostSprout AI",
-    description="Hyperlocal Garden Intelligence & Pocket Field Companion powered by TabPFN & Gemma",
+    description="Hyperlocal Garden Intelligence & Pocket Field Companion powered by Tabular ML & Gemma",
     version="1.0.0"
 )
 
@@ -89,16 +91,117 @@ class JournalEntry(BaseModel):
 
 @app.get("/api/health")
 def health_check():
+    predictor = get_tabpfn()
+    actual_model = getattr(predictor, "last_prediction_model", predictor.model_type)
     return {
         "status": "online",
         "app": "FrostSprout Touch Grass Garden Planner",
         "version": "1.0.0",
+        "model_actually_used": actual_model,
+        "last_prediction_model": actual_model,
         "open_source_models": {
-            "tabular_foundation_model": "TabPFN (Prior Labs)",
+            "tabular_foundation_model": actual_model,
+            "tabular_model_active": actual_model,
+            "last_prediction_model": actual_model,
+            "tabpfn_status": predictor.tabpfn_status,
             "companion_language_model": "Google Gemma (gemma3 via Ollama)",
             "voice_audio": "Web Speech API (Browser Synthesis)"
         },
         "crops_count": len(crops_data)
+    }
+
+
+@app.get("/api/live-weather")
+def get_live_weather(lat: float = 29.39, lon: float = 76.97):
+    """
+    Fetch live real-world weather from Open-Meteo (free, no API key required)
+    for coordinates (default: Panipat, Haryana, India).
+    Maps hourly telemetry to tabular model microclimate features.
+    """
+    url = (
+        f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}"
+        f"&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,wind_speed_10m,cloud_cover"
+        f"&forecast_days=2&timezone=Asia%2FKolkata"
+    )
+    try:
+        resp = requests.get(url, timeout=8.0)
+        if resp.status_code != 200:
+            raise HTTPException(
+                status_code=502,
+                detail=f"Open-Meteo returned status {resp.status_code}: {resp.text[:200]}"
+            )
+        data = resp.json()
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(
+            status_code=502,
+            detail=f"Open-Meteo weather service unreachable: {str(e)}"
+        )
+
+    elevation = float(data.get("elevation", 238.0))
+    hourly = data.get("hourly", {})
+    temps = hourly.get("temperature_2m", [])
+    humidities = hourly.get("relative_humidity_2m", [])
+    clouds = hourly.get("cloud_cover", [])
+
+    if not temps:
+        raise HTTPException(status_code=502, detail="Incomplete telemetry data from Open-Meteo")
+
+    # Real features from Open-Meteo
+    daily_min_temp_c = round(float(min(temps)), 1)
+    daily_max_temp_c = round(float(max(temps)), 1)
+    humidity_pct = round(float(sum(humidities[:24]) / max(1, len(humidities[:24]))), 1)
+    cloud_cover_pct = round(float(sum(clouds[:24]) / max(1, len(clouds[:24]))), 1)
+    day_of_year = int(datetime.now().timetuple().tm_yday)
+
+    # Clearly labeled defaults for features without Open-Meteo equivalents in this query
+    soil_temp_5cm_c = 22.0
+    barometric_pressure_hpa = 1013.25
+    rolling_min_7d_c = daily_min_temp_c
+
+    features = {
+        "latitude": round(lat, 4),
+        "elevation_m": elevation,
+        "day_of_year": day_of_year,
+        "daily_min_temp_c": daily_min_temp_c,
+        "daily_max_temp_c": daily_max_temp_c,
+        "soil_temp_5cm_c": soil_temp_5cm_c,
+        "humidity_pct": humidity_pct,
+        "cloud_cover_pct": cloud_cover_pct,
+        "barometric_pressure_hpa": barometric_pressure_hpa,
+        "rolling_min_7d_c": rolling_min_7d_c
+    }
+
+    feature_metadata = {
+        "latitude": {"source": "real", "label": "Real (Open-Meteo query)"},
+        "elevation_m": {"source": "real", "label": "Real (Open-Meteo elevation)"},
+        "day_of_year": {"source": "real", "label": "Real (System calendar day)"},
+        "daily_min_temp_c": {"source": "real", "label": "Real (Open-Meteo 48h min)"},
+        "daily_max_temp_c": {"source": "real", "label": "Real (Open-Meteo 48h max)"},
+        "humidity_pct": {"source": "real", "label": "Real (Open-Meteo 24h average)"},
+        "cloud_cover_pct": {"source": "real", "label": "Real (Open-Meteo 24h average)"},
+        "soil_temp_5cm_c": {"source": "defaulted", "label": "Defaulted (22.0°C - not in Open-Meteo query)"},
+        "barometric_pressure_hpa": {"source": "defaulted", "label": "Defaulted (1013.25 hPa standard sea-level)"},
+        "rolling_min_7d_c": {"source": "defaulted", "label": "Defaulted to 48h min (7-day history not in 2-day query)"}
+    }
+
+    loc_name = "Panipat, Haryana, India" if abs(lat - 29.39) < 0.1 and abs(lon - 76.97) < 0.1 else f"Custom Coordinates ({lat}, {lon})"
+
+    return {
+        "status": "success",
+        "source": "Open-Meteo Forecast API (free, no API key)",
+        "location": {
+            "name": loc_name,
+            "latitude": lat,
+            "longitude": lon,
+            "elevation_m": elevation,
+            "timezone": data.get("timezone", "Asia/Kolkata")
+        },
+        "fetched_at": datetime.now().isoformat(),
+        "features": features,
+        "feature_metadata": feature_metadata,
+        "note": "Frost scenarios are simulated; live weather is real."
     }
 
 
@@ -111,7 +214,7 @@ def get_crops():
 @app.post("/api/predict/frost")
 def predict_frost(data: MicroclimateInput):
     """
-    Run TabPFN tabular foundation model to forecast frost probability,
+    Run tabular model to forecast frost probability,
     days until killing frost, and radiative freeze anomalies.
     """
     try:
@@ -166,7 +269,7 @@ def predict_frost(data: MicroclimateInput):
 @app.post("/api/generate/plan")
 def generate_garden_plan(req: GeneratePlanRequest):
     """
-    Gemma transforms TabPFN tabular predictions into a tangible, hands-on outdoor action plan.
+    Gemma transforms tabular predictions into a tangible, hands-on outdoor action plan.
     """
     try:
         predictor = get_tabpfn()

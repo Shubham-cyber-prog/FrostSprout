@@ -38,6 +38,29 @@ FrostSprout is a hyperlocal microclimate garden planning assistant designed to r
 - CSS print styling formats the garden plan onto an index card layout.
 - Local session log to record outdoor minutes and soil notes.
 
+## Live Weather Telemetry (Open-Meteo)
+
+FrostSprout supports live microclimate telemetry via the free, open **Open-Meteo Forecast API** (`https://api.open-meteo.com/v1/forecast`, no API key required):
+
+- **Default Location**: Panipat, Haryana, India (`lat=29.39`, `lon=76.97`, elevation ~238m).
+- **Endpoint**: `GET /api/live-weather?lat={lat}&lon={lon}`
+- **Units**: All temperatures and predictions strictly use **Celsius (°C)**, elevation in meters (m), humidity/clouds in percent (%), and pressure in hPa. The synthetic training data and model feature definitions natively operate in Celsius, so no unit conversion is needed.
+- **Real vs. Defaulted Features**:
+  - **Real Telemetry (from Open-Meteo query)**:
+    - `latitude`: Real (Open-Meteo coordinate response)
+    - `elevation_m`: Real (Open-Meteo ground elevation)
+    - `day_of_year`: Real (System calendar day of year in `Asia/Kolkata`)
+    - `daily_min_temp_c`: Real (48-hour minimum of `temperature_2m`)
+    - `daily_max_temp_c`: Real (48-hour maximum of `temperature_2m`)
+    - `humidity_pct`: Real (24-hour average of `relative_humidity_2m`)
+    - `cloud_cover_pct`: Real (24-hour average of `cloud_cover`)
+  - **Defaulted Features (Not provided by the 2-day hourly forecast query)**:
+    - `soil_temp_5cm_c`: Defaulted (22.0°C; 5cm soil depth telemetry is not queried)
+    - `barometric_pressure_hpa`: Defaulted (1013.25 hPa standard sea-level)
+    - `rolling_min_7d_c`: Defaulted to 48-hour minimum (7-day past history is not returned in 2-day forecast query)
+- **UI & Simulation Disclosure**: The UI displays: *"Frost scenarios are simulated; live weather is real."* Manual sliders allow what-if exploration (e.g. testing hypothetical freeze drops down to 2°C) and are explicitly tagged as `Mode: What-If (Simulated)`.
+- **Training Data Disclosure**: The underlying prediction model is trained on synthetic microclimate data (`backend/data/frost_history.csv`, seed=42) and is not calibrated against real-world agricultural station ground truths.
+
 ---
 
 ## Benchmark Comparison (Synthetic Data)

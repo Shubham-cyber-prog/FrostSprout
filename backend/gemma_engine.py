@@ -161,9 +161,10 @@ class GemmaEngine:
             "Listen to the autumn wind through the bare branches. Your boots are in the grass and your screen is done."
         )
 
+        model_name = frost_data.get("model_used", "tabular microclimate")
         audio_walkthrough = (
             f"Welcome outside to your garden. Step out into the fresh air, take a deep breath, and let's get your hands dirty. "
-            f"According to our TabPFN microclimate analysis, you have about {days} days before the first true frost. "
+            f"According to our {model_name} analysis, you have about {days} days before the first true frost. "
             f"Today we are planting {', '.join(crop_names[:2])}. "
             f"First: grab your garden fork. Loosen the soil bed about six inches down. "
             f"If you're planting garlic, separate your cloves now. Keep the papery skins on! Plant each clove pointy end up, about two inches down. "

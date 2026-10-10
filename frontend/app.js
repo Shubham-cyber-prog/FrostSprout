@@ -1,7 +1,7 @@
 /**
  * FrostSprout Frontend Application Logic
  * Theme: 'Touch Grass' - Screen in Pocket, Hands in the Dirt.
- * Connects TabPFN tabular frost modeling, Google Gemma action planning,
+ * Connects tabular frost modeling, Google Gemma action planning,
  * Web Speech API hands-free audio walkthrough, and Proof of Dirt journaling.
  */
 
@@ -19,7 +19,11 @@ const state = {
   activeFilter: 'all',
   isPlayingAudio: false,
   speechSynthUtterance: null,
-  journalEntries: []
+  journalEntries: [],
+  weatherMode: 'simulated',
+  lastLiveWeather: null,
+  currentLatitude: 29.39,
+  currentLongitude: 76.97
 };
 
 // Preset Microclimate Profiles
@@ -147,6 +151,17 @@ const elements = {
   doySlider: document.getElementById('doySlider'),
   doyVal: document.getElementById('doyVal'),
   btnRunPrediction: document.getElementById('btnRunPrediction'),
+
+  // Live Weather Telemetry Elements
+  btnLiveWeatherPanipat: document.getElementById('btnLiveWeatherPanipat'),
+  weatherModeBadge: document.getElementById('weatherModeBadge'),
+  weatherLocationText: document.getElementById('weatherLocationText'),
+  weatherFetchTimeText: document.getElementById('weatherFetchTimeText'),
+  defaultedNoticeBadge: document.getElementById('defaultedNoticeBadge'),
+  liveWeatherDetails: document.getElementById('liveWeatherDetails'),
+  liveTelemetryBreakdown: document.getElementById('liveTelemetryBreakdown'),
+  liveWeatherErrorBox: document.getElementById('liveWeatherErrorBox'),
+  liveWeatherErrorText: document.getElementById('liveWeatherErrorText'),
   
   // Radar & Hero Elements
   gaugeBar: document.getElementById('gaugeBar'),
@@ -159,6 +174,7 @@ const elements = {
   heroDaysDisplay: document.getElementById('heroDaysDisplay'),
   heroStatusDisplay: document.getElementById('heroStatusDisplay'),
   modelBadge: document.getElementById('modelBadge'),
+  headerModelBadge: document.getElementById('headerModelBadge'),
   
   // Crops Grid & Actions
   cropsGrid: document.getElementById('cropsGrid'),
@@ -213,34 +229,61 @@ function setupEventListeners() {
   elements.zonePresetSelect.addEventListener('change', (e) => {
     const val = e.target.value;
     if (PRESETS[val]) {
+      state.weatherMode = 'what-if';
+      if (elements.weatherModeBadge) {
+        elements.weatherModeBadge.textContent = 'Mode: Preset (Simulated)';
+        elements.weatherModeBadge.className = 'badge badge-warn';
+      }
       applyPreset(PRESETS[val]);
       runPrediction();
     }
   });
 
+  // What-if mode helper for manual slider adjustments
+  function markWhatIfMode() {
+    state.weatherMode = 'what-if';
+    if (elements.weatherModeBadge) {
+      elements.weatherModeBadge.textContent = 'Mode: What-If (Simulated)';
+      elements.weatherModeBadge.className = 'badge badge-warn';
+    }
+  }
+
+  // Live Weather button
+  if (elements.btnLiveWeatherPanipat) {
+    elements.btnLiveWeatherPanipat.addEventListener('click', () => {
+      fetchAndApplyLiveWeather(29.39, 76.97);
+    });
+  }
+
   // Slider change listeners
   elements.minTempSlider.addEventListener('input', (e) => {
     elements.minTempVal.textContent = `${e.target.value}°C`;
+    markWhatIfMode();
     checkRadiativeAnomaly();
   });
   elements.soilTempSlider.addEventListener('input', (e) => {
     elements.soilTempVal.textContent = `${e.target.value}°C`;
+    markWhatIfMode();
   });
   elements.cloudSlider.addEventListener('input', (e) => {
     const v = parseInt(e.target.value);
     elements.cloudVal.textContent = `${v}% (${v < 25 ? 'Clear Night - Radiative Chill' : 'Cloud Cover'})`;
+    markWhatIfMode();
     checkRadiativeAnomaly();
   });
   elements.elevSlider.addEventListener('input', (e) => {
     elements.elevVal.textContent = `${e.target.value}m`;
+    markWhatIfMode();
   });
   elements.humiditySlider.addEventListener('input', (e) => {
     elements.humidityVal.textContent = `${e.target.value}%`;
+    markWhatIfMode();
   });
   elements.doySlider.addEventListener('input', (e) => {
     const d = parseInt(e.target.value);
     const dateStr = doyToDateString(d);
     elements.doyVal.textContent = `${dateStr} (DOY ${d})`;
+    markWhatIfMode();
   });
 
   // Run Prediction button
@@ -352,25 +395,126 @@ async function loadInitialData() {
   runPrediction();
 }
 
-// Run TabPFN Prediction
+// Fetch live weather from backend endpoint and apply to inputs
+async function fetchAndApplyLiveWeather(lat = 29.39, lon = 76.97) {
+  const btn = elements.btnLiveWeatherPanipat;
+  const originalHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<div class="spinner" style="width:14px;height:14px;border-width:2px;display:inline-block;margin-right:6px;"></div><span>Fetching live weather...</span>`;
+  if (elements.liveWeatherErrorBox) elements.liveWeatherErrorBox.style.display = 'none';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/live-weather?lat=${lat}&lon=${lon}`);
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.detail || `HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    
+    // Fill slider inputs with live data
+    const f = data.features;
+    state.currentLatitude = f.latitude;
+    state.currentLongitude = data.location.longitude;
+    state.lastLiveWeather = data;
+    state.weatherMode = 'live';
+
+    elements.minTempSlider.value = f.daily_min_temp_c;
+    elements.minTempVal.textContent = `${f.daily_min_temp_c}°C`;
+
+    elements.soilTempSlider.value = f.soil_temp_5cm_c;
+    elements.soilTempVal.textContent = `${f.soil_temp_5cm_c}°C (Defaulted)`;
+
+    elements.cloudSlider.value = Math.round(f.cloud_cover_pct);
+    elements.cloudVal.textContent = `${Math.round(f.cloud_cover_pct)}% (${Math.round(f.cloud_cover_pct) < 25 ? 'Clear Night' : 'Cloud Cover'})`;
+
+    elements.elevSlider.value = Math.round(f.elevation_m);
+    elements.elevVal.textContent = `${Math.round(f.elevation_m)}m`;
+
+    elements.humiditySlider.value = Math.round(f.humidity_pct);
+    elements.humidityVal.textContent = `${Math.round(f.humidity_pct)}%`;
+
+    elements.doySlider.value = f.day_of_year;
+    elements.doyVal.textContent = `${doyToDateString(f.day_of_year)} (DOY ${f.day_of_year})`;
+
+    checkRadiativeAnomaly();
+
+    // Update status UI
+    if (elements.weatherModeBadge) {
+      elements.weatherModeBadge.textContent = 'Mode: Live Weather (Panipat)';
+      elements.weatherModeBadge.className = 'badge badge-fest';
+    }
+    if (elements.weatherLocationText) {
+      elements.weatherLocationText.textContent = `Location: ${data.location.name} (${data.location.latitude}°N, ${data.location.longitude}°E, ${data.location.elevation_m}m)`;
+    }
+    if (elements.weatherFetchTimeText) {
+      const fetchTime = new Date(data.fetched_at).toLocaleTimeString();
+      elements.weatherFetchTimeText.textContent = `Fetched: ${fetchTime}`;
+    }
+    if (elements.defaultedNoticeBadge) elements.defaultedNoticeBadge.style.display = 'inline-block';
+    if (elements.liveWeatherDetails) elements.liveWeatherDetails.style.display = 'block';
+    if (elements.liveTelemetryBreakdown) {
+      elements.liveTelemetryBreakdown.textContent = 
+        `Real: Min ${f.daily_min_temp_c}°C, Max ${f.daily_max_temp_c}°C, Humidity ${f.humidity_pct}%, Clouds ${f.cloud_cover_pct}% | Defaulted: Soil Temp ${f.soil_temp_5cm_c}°C, Pressure ${f.barometric_pressure_hpa} hPa, Rolling Min ${f.rolling_min_7d_c}°C`;
+    }
+
+    // Run prediction automatically with live weather telemetry
+    await runPrediction();
+
+  } catch (err) {
+    console.error('Live weather fetch failed:', err);
+    if (elements.liveWeatherErrorBox) elements.liveWeatherErrorBox.style.display = 'block';
+    if (elements.liveWeatherErrorText) {
+      elements.liveWeatherErrorText.textContent = `Open-Meteo unreachable: ${err.message}. Falling back to manual sliders.`;
+    }
+    if (elements.weatherModeBadge) {
+      elements.weatherModeBadge.textContent = 'Mode: Simulated (Fallback)';
+      elements.weatherModeBadge.className = 'badge badge-warn';
+    }
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalHtml;
+  }
+}
+
+// Run Tabular Prediction
 async function runPrediction() {
   elements.btnRunPrediction.disabled = true;
   elements.btnRunPrediction.innerHTML = `
     <div class="spinner" style="width:16px;height:16px;border-width:2px;"></div>
-    <span>TabPFN In-Context Reasoning...</span>
+    <span>Running tabular prediction...</span>
   `;
 
+  const minTemp = parseFloat(elements.minTempSlider.value);
+  const soilTemp = parseFloat(elements.soilTempSlider.value);
+  const cloud = parseFloat(elements.cloudSlider.value);
+  const elev = parseFloat(elements.elevSlider.value);
+  const humidity = parseFloat(elements.humiditySlider.value);
+  const doy = parseInt(elements.doySlider.value);
+
+  let maxTemp = minTemp + 8.5;
+  let pressure = 1013.25;
+  let rollingMin = minTemp;
+  let lat = state.currentLatitude || 29.39;
+
+  if (state.weatherMode === 'live' && state.lastLiveWeather) {
+    const lf = state.lastLiveWeather.features;
+    maxTemp = lf.daily_max_temp_c;
+    pressure = lf.barometric_pressure_hpa;
+    rollingMin = lf.rolling_min_7d_c;
+    lat = lf.latitude;
+  }
+
   const payload = {
-    latitude: 41.2,
-    elevation_m: parseFloat(elements.elevSlider.value),
-    day_of_year: parseInt(elements.doySlider.value),
-    daily_min_temp_c: parseFloat(elements.minTempSlider.value),
-    daily_max_temp_c: parseFloat(elements.minTempSlider.value) + 9.5,
-    soil_temp_5cm_c: parseFloat(elements.soilTempSlider.value),
-    humidity_pct: parseFloat(elements.humiditySlider.value),
-    cloud_cover_pct: parseFloat(elements.cloudSlider.value),
-    barometric_pressure_hpa: 1020.0,
-    rolling_min_7d_c: parseFloat(elements.minTempSlider.value) + 0.8
+    latitude: lat,
+    elevation_m: elev,
+    day_of_year: doy,
+    daily_min_temp_c: minTemp,
+    daily_max_temp_c: maxTemp,
+    soil_temp_5cm_c: soilTemp,
+    humidity_pct: humidity,
+    cloud_cover_pct: cloud,
+    barometric_pressure_hpa: pressure,
+    rolling_min_7d_c: rollingMin
   };
 
   try {
@@ -389,7 +533,7 @@ async function runPrediction() {
       runLocalPredictionFallback(payload);
     }
   } catch (err) {
-    console.warn('Running local browser TabPFN surrogate:', err);
+    console.warn('Running local browser fallback surrogate:', err);
     runLocalPredictionFallback(payload);
   } finally {
     elements.btnRunPrediction.disabled = false;
@@ -462,7 +606,11 @@ function updateFrostGauge(pred) {
   const isFallback = (pred.tabpfn_status && pred.tabpfn_status.includes('unavailable')) || 
                      (pred.model_used && pred.model_used.includes('Fallback')) ||
                      (pred.model_used && pred.model_used.includes('unavailable'));
-  elements.modelBadge.textContent = pred.model_used || 'RandomForest (TabPFN unavailable)';
+  const actualModel = pred.model_used || 'RandomForest (TabPFN unavailable)';
+  elements.modelBadge.textContent = actualModel;
+  if (elements.headerModelBadge) {
+    elements.headerModelBadge.textContent = actualModel;
+  }
   if (isFallback) {
     elements.modelBadge.className = 'badge-micro badge-warn';
   } else {
@@ -728,7 +876,8 @@ function prepareAndPrintPocketCard() {
   const chosen = state.allCrops.filter(c => state.selectedCropIds.includes(c.id));
   
   elements.printCardDate.textContent = `Autumn ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-  elements.printWeatherBar.textContent = `TabPFN Frost Risk: ${pred.frost_probability_percent}% | Window: ~${pred.days_until_frost} Days to Freeze`;
+  const modelName = pred.model_used || 'RandomForest (TabPFN unavailable)';
+  elements.printWeatherBar.textContent = `${modelName} Frost Risk: ${pred.frost_probability_percent}% | Window: ~${pred.days_until_frost} Days to Freeze`;
 
   elements.printCropsSection.innerHTML = `
     <strong>Target Crops:</strong><br>
