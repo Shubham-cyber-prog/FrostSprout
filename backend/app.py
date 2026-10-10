@@ -118,26 +118,37 @@ def get_live_weather(lat: float = 29.39, lon: float = 76.97):
     for coordinates (default: Panipat, Haryana, India).
     Maps hourly telemetry to tabular model microclimate features.
     """
+    base_url = os.getenv("OPEN_METEO_BASE_URL", "https://api.open-meteo.com/v1/forecast")
     url = (
-        f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}"
+        f"{base_url}?latitude={lat}&longitude={lon}"
         f"&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,wind_speed_10m,cloud_cover"
         f"&forecast_days=2&timezone=Asia%2FKolkata"
     )
     try:
-        resp = requests.get(url, timeout=8.0)
-        if resp.status_code != 200:
-            raise HTTPException(
-                status_code=502,
-                detail=f"Open-Meteo returned status {resp.status_code}: {resp.text[:200]}"
-            )
-        data = resp.json()
-    except Exception as e:
-        if isinstance(e, HTTPException):
-            raise e
+        resp = requests.get(url, timeout=5.0)
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout, requests.exceptions.RequestException) as net_err:
         raise HTTPException(
             status_code=502,
-            detail=f"Open-Meteo weather service unreachable: {str(e)}"
+            detail=f"Open-Meteo unreachable (network error/timeout): {type(net_err).__name__}: {str(net_err)}"
         )
+    except Exception as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Open-Meteo unreachable (network error/timeout): {str(e)}"
+        )
+
+    if resp.status_code == 400:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Open-Meteo bad request (HTTP 400): {resp.text[:200]}"
+        )
+    elif resp.status_code != 200:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Open-Meteo error (HTTP {resp.status_code}): {resp.text[:200]}"
+        )
+
+    data = resp.json()
 
     elevation = float(data.get("elevation", 238.0))
     hourly = data.get("hourly", {})
@@ -181,9 +192,9 @@ def get_live_weather(lat: float = 29.39, lon: float = 76.97):
         "daily_max_temp_c": {"source": "real", "label": "Real (Open-Meteo 48h max)"},
         "humidity_pct": {"source": "real", "label": "Real (Open-Meteo 24h average)"},
         "cloud_cover_pct": {"source": "real", "label": "Real (Open-Meteo 24h average)"},
-        "soil_temp_5cm_c": {"source": "defaulted", "label": "Defaulted (22.0°C - not in Open-Meteo query)"},
-        "barometric_pressure_hpa": {"source": "defaulted", "label": "Defaulted (1013.25 hPa standard sea-level)"},
-        "rolling_min_7d_c": {"source": "defaulted", "label": "Defaulted to 48h min (7-day history not in 2-day query)"}
+        "soil_temp_5cm_c": {"source": "defaulted", "label": "22.0°C (default, not measured)"},
+        "barometric_pressure_hpa": {"source": "defaulted", "label": "1013.25 hPa (default, not measured)"},
+        "rolling_min_7d_c": {"source": "defaulted", "label": f"{daily_min_temp_c}°C (default, not measured)"}
     }
 
     loc_name = "Panipat, Haryana, India" if abs(lat - 29.39) < 0.1 and abs(lon - 76.97) < 0.1 else f"Custom Coordinates ({lat}, {lon})"
@@ -250,6 +261,7 @@ def predict_frost(data: MicroclimateInput):
                 "status": status,
                 "min_soil_temp_c": crop["min_soil_temp_c"],
                 "current_soil_temp_c": soil_temp,
+                "soil_temp_label": f"{soil_temp}°C (default, not measured)",
                 "frost_tolerance": crop["frost_tolerance"],
                 "outdoor_action": crop["outdoor_action"],
                 "touch_grass_tip": crop["touch_grass_tip"]

@@ -228,7 +228,7 @@
           <div class="slider-group">
             <div class="slider-header">
               <label for="soilTempSlider" class="slider-label">Soil Temp (5cm Depth)</label>
-              <span class="slider-value" id="soilTempVal">8.0°C</span>
+              <span class="slider-value" id="soilTempVal">8.0°C (default, not measured)</span>
             </div>
             <input type="range" id="soilTempSlider" min="0" max="45" step="0.5" value="8.0" class="range-slider">
           </div>
@@ -296,6 +296,11 @@
               <button class="tab-btn" data-filter="Brassicas">Brassicas</button>
             </div>
           </div>
+        </div>
+
+        <!-- Crop List Notice -->
+        <div class="crop-list-notice" style="margin: 0.75rem 0; padding: 0.65rem 0.85rem; border-radius: 8px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); font-size: 0.78rem; color: #fde68a; line-height: 1.4;">
+          ⚠️ <strong>Notice:</strong> Soil temperature is an assumed default. Crop data is for temperate climates, not tuned for Panipat.
         </div>
 
         <!-- Crops Grid -->

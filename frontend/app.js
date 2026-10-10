@@ -262,7 +262,7 @@ function setupEventListeners() {
     checkRadiativeAnomaly();
   });
   elements.soilTempSlider.addEventListener('input', (e) => {
-    elements.soilTempVal.textContent = `${e.target.value}°C`;
+    elements.soilTempVal.textContent = `${e.target.value}°C (default, not measured)`;
     markWhatIfMode();
   });
   elements.cloudSlider.addEventListener('input', (e) => {
@@ -341,7 +341,7 @@ function applyPreset(preset) {
   elements.minTempVal.textContent = `${preset.minTemp}°C`;
 
   elements.soilTempSlider.value = preset.soilTemp;
-  elements.soilTempVal.textContent = `${preset.soilTemp}°C`;
+  elements.soilTempVal.textContent = `${preset.soilTemp}°C (default, not measured)`;
 
   elements.cloudSlider.value = preset.cloud;
   elements.cloudVal.textContent = `${preset.cloud}% (${preset.cloud < 25 ? 'Clear Night' : 'Cloud Cover'})`;
@@ -422,7 +422,7 @@ async function fetchAndApplyLiveWeather(lat = 29.39, lon = 76.97) {
     elements.minTempVal.textContent = `${f.daily_min_temp_c}°C`;
 
     elements.soilTempSlider.value = f.soil_temp_5cm_c;
-    elements.soilTempVal.textContent = `${f.soil_temp_5cm_c}°C (Defaulted)`;
+    elements.soilTempVal.textContent = `${f.soil_temp_5cm_c}°C (default, not measured)`;
 
     elements.cloudSlider.value = Math.round(f.cloud_cover_pct);
     elements.cloudVal.textContent = `${Math.round(f.cloud_cover_pct)}% (${Math.round(f.cloud_cover_pct) < 25 ? 'Clear Night' : 'Cloud Cover'})`;
@@ -450,11 +450,14 @@ async function fetchAndApplyLiveWeather(lat = 29.39, lon = 76.97) {
       const fetchTime = new Date(data.fetched_at).toLocaleTimeString();
       elements.weatherFetchTimeText.textContent = `Fetched: ${fetchTime}`;
     }
-    if (elements.defaultedNoticeBadge) elements.defaultedNoticeBadge.style.display = 'inline-block';
+    if (elements.defaultedNoticeBadge) {
+      elements.defaultedNoticeBadge.textContent = '⚠️ Soil temp & pressure (default, not measured)';
+      elements.defaultedNoticeBadge.style.display = 'inline-block';
+    }
     if (elements.liveWeatherDetails) elements.liveWeatherDetails.style.display = 'block';
     if (elements.liveTelemetryBreakdown) {
       elements.liveTelemetryBreakdown.textContent = 
-        `Real: Min ${f.daily_min_temp_c}°C, Max ${f.daily_max_temp_c}°C, Humidity ${f.humidity_pct}%, Clouds ${f.cloud_cover_pct}% | Defaulted: Soil Temp ${f.soil_temp_5cm_c}°C, Pressure ${f.barometric_pressure_hpa} hPa, Rolling Min ${f.rolling_min_7d_c}°C`;
+        `Real: Min ${f.daily_min_temp_c}°C, Max ${f.daily_max_temp_c}°C, Humidity ${f.humidity_pct}%, Clouds ${f.cloud_cover_pct}% | Defaulted: Soil Temp ${f.soil_temp_5cm_c}°C (default, not measured), Pressure ${f.barometric_pressure_hpa} hPa (default, not measured), Rolling Min ${f.rolling_min_7d_c}°C (default, not measured)`;
     }
 
     // Run prediction automatically with live weather telemetry
@@ -653,6 +656,10 @@ function renderCrops(cropRecommendations = null) {
         <div class="crop-meta-row">
           <span>Tolerance: ${crop.frost_tolerance || 'Hardy'}</span>
           <span class="knuckle-tag">📏 ${crop.planting_depth_cm || 5}cm deep</span>
+        </div>
+
+        <div class="crop-soil-meta" style="font-size: 0.74rem; color: #94a3b8; margin: 4px 0 6px 0;">
+          <span>🌱 Soil temp: ${crop.current_soil_temp_c !== undefined ? crop.current_soil_temp_c + '°C (default, not measured)' : '22.0°C (default, not measured)'}</span>
         </div>
 
         <div class="crop-tip">
