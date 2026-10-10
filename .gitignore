@@ -1,0 +1,20 @@
+# Environment & Secrets
+.env
+
+# Data & Persistence
+journal.json
+backend/data/journal.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+env/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
