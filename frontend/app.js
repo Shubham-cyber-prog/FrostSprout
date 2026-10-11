@@ -225,6 +225,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Setup Event Listeners
 function setupEventListeners() {
+  // Theme Switcher & Persistence
+  const btnThemeToggle = document.getElementById('btnThemeToggle');
+  const iconSun = document.getElementById('themeToggleIconSun');
+  const iconMoon = document.getElementById('themeToggleIconMoon');
+
+  function updateThemeUI(theme) {
+    if (theme === 'theme-light') {
+      document.body.className = 'theme-light';
+      if (iconSun) iconSun.style.display = 'none';
+      if (iconMoon) iconMoon.style.display = 'block';
+    } else {
+      document.body.className = 'theme-dark';
+      if (iconSun) iconSun.style.display = 'block';
+      if (iconMoon) iconMoon.style.display = 'none';
+    }
+  }
+
+  const savedTheme = localStorage.getItem('frostsprout_theme') || 'theme-dark';
+  updateThemeUI(savedTheme);
+
+  if (btnThemeToggle) {
+    btnThemeToggle.addEventListener('click', () => {
+      const isDark = document.body.classList.contains('theme-dark');
+      const nextTheme = isDark ? 'theme-light' : 'theme-dark';
+      localStorage.setItem('frostsprout_theme', nextTheme);
+      updateThemeUI(nextTheme);
+    });
+  }
+
   // Preset selector
   elements.zonePresetSelect.addEventListener('change', (e) => {
     const val = e.target.value;

@@ -3,11 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FrostSprout | Touch Grass Garden AI</title>
-  <meta name="description" content="Hyperlocal garden intelligence powered by Tabular ML and Google Gemma. Know what to plant before frost, then put your phone in your pocket and touch grass.">
+  <title>FrostSprout | AI Microclimate Garden Intelligence</title>
+  <meta name="description" content="Hyperlocal garden intelligence powered by Tabular ML (TabPFN/Random Forest) and Google Gemma. Know what to plant before frost, then put your phone in your pocket and touch grass.">
+  <meta name="theme-color" content="#080c14">
+
+  <!-- Modern Google Fonts Stack -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="theme-light">
+<body class="theme-dark">
+
+  <!-- Dynamic Ambient Glow Aurora Mesh -->
+  <div class="ambient-glow orb-1" aria-hidden="true"></div>
+  <div class="ambient-glow orb-2" aria-hidden="true"></div>
+  <div class="ambient-glow orb-3" aria-hidden="true"></div>
 
   <!-- Header: app name + short tagline + model badge + clean action triggers -->
   <header class="app-header" id="appHeader">
@@ -35,13 +47,17 @@
       </div>
 
       <div class="header-actions">
-        <button class="btn btn-outline" id="btnOpenBenchmark" type="button">
+        <button class="btn btn-outline" id="btnOpenBenchmark" type="button" title="View AI Model Benchmark Comparison">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
           <span>AI Benchmark</span>
         </button>
-        <button class="btn btn-outline" id="btnQuickAudioWalk" type="button">
+        <button class="btn btn-outline" id="btnQuickAudioWalk" type="button" title="Launch Hands-Free Audio Tour">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           <span>Hands-Free Audio</span>
+        </button>
+        <button class="btn btn-outline btn-icon" id="btnThemeToggle" type="button" aria-label="Toggle Dark/Light Mode" title="Toggle Theme">
+          <svg id="themeToggleIconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg id="themeToggleIconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="display:none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
       </div>
     </div>
@@ -294,7 +310,10 @@
         <div class="plan-content-grid">
           <!-- Chores Card -->
           <div class="plan-subcard" id="choresCard">
-            <h3 class="plan-subcard-title">Weekly Outdoor Chores</h3>
+            <h3 class="plan-subcard-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;display:inline-block;vertical-align:middle;margin-right:4px;"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              Weekly Outdoor Chores
+            </h3>
             <div class="chores-list" id="choresList">
               <!-- Dynamically populated chores -->
             </div>
@@ -302,7 +321,10 @@
 
           <!-- Touch Grass Sensory & Field Card Exporter -->
           <div class="plan-subcard" id="sensoryCard">
-            <h3 class="plan-subcard-title">Touch Grass Sensory Cue</h3>
+            <h3 class="plan-subcard-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;display:inline-block;vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              Touch Grass Sensory Cue
+            </h3>
             <div class="sensory-box" id="sensoryBoxText">
               "Kneel beside your bed, press your bare fingertips 5cm into the dirt. Smell the autumn earth. Cold soil holds fungal richness that tells you microbes are ready for winter rest."
             </div>
@@ -345,7 +367,7 @@
           </div>
 
           <div class="audio-tip">
-            <span>Put on headphones, slide phone into pocket, step into dirt.</span>
+            <span>🎧 Put on headphones, slide phone into pocket, step into dirt.</span>
           </div>
         </div>
       </section>
@@ -357,7 +379,7 @@
             <h2 class="card-title" id="journalHeading">Proof of Dirt Garden Log</h2>
             <p class="card-subtitle">Document outdoor time, touch grass streaks, and soil texture</p>
           </div>
-          <span class="badge badge-streak" id="streakBadgeText">3 Day Streak</span>
+          <span class="badge badge-streak" id="streakBadgeText">🔥 3 Day Streak</span>
         </div>
 
         <div class="journal-grid">
@@ -444,7 +466,7 @@
   <footer class="app-footer" id="appFooter">
     <div class="footer-container">
       <div class="footer-left">
-        <span class="footer-brand">FrostSprout</span> — Open-Source AI for the Real World. Built for Hacktoberfest 2026 Week 1 ("Touch Grass").
+        <span class="footer-brand">FrostSprout</span> — Open-Source AI for the Real World. Built for Hacktoberfest ("Touch Grass").
       </div>
       <div class="footer-right">
         <span>Powered by Prior Labs TabPFN & Google Gemma</span>
