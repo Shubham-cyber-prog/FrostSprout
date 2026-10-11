@@ -69,9 +69,9 @@ Evaluated using `backend/benchmark.py` on 800 synthetic microclimate samples (`b
 
 | Model | ROC-AUC | Accuracy | Log-Loss | Fit Time | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Random Forest** | 0.9987 | 99.00% | 0.0364 | 0.1266s | VERIFIED (sklearn) |
-| **XGBoost** | 0.9986 | 99.00% | 0.0435 | 0.0312s | VERIFIED (xgboost) |
-| **Prior Labs TabPFN** | NOT VERIFIED | NOT VERIFIED | NOT VERIFIED | NOT VERIFIED | FAILED (TabPFNLicenseError: model weights require Prior Labs license auth) |
+| **Random Forest** | 0.9987 | 99.00% | 0.0364 | 0.0994s | VERIFIED (sklearn) |
+| **XGBoost** | 0.9986 | 99.00% | 0.0435 | 0.0346s | VERIFIED (xgboost) |
+| **Prior Labs TabPFN** | 0.9987 | 98.50% | 0.0358 | 0.4460s | VERIFIED (tabpfn) |
 
 > **Data Disclosure**: Data synthetic hai aur label usi formula se bana hai, isliye saare models ke scores lagbhag perfect hain aur ye real-world accuracy nahi dikhate. Previous fallback claims on historical climate data were unverified and have been removed.
 
@@ -82,8 +82,8 @@ Evaluated using `backend/benchmark.py` on 800 synthetic microclimate samples (`b
 ### TabPFN (`backend/tabpfn_engine.py`)
 - **Class imported**: `tabpfn.classifier.TabPFNClassifier` (package: `tabpfn>=9.1.0`).
 - **Weights & Licensing**: TabPFN v2 requires a one-time Prior Labs license acceptance and API key (`TABPFN_TOKEN`) to download weights.
-- **Laptop execution status**: Weights download did not run in this IDE environment due to missing interactive authentication / `TABPFN_TOKEN`.
-- **Fallback Handling**: Silent fallback hata diya gaya hai. Agar TabPFN unavailable ya unauthenticated ho to UI aur API saaf batate hain ("TabPFN unavailable"), aur active model ka naam response mein "RandomForest (Fallback: TabPFN unavailable)" ke roop mein return hota hai.
+- **Laptop execution status**: Configured and verified via `TABPFN_TOKEN` in `.env`. Foundation model weights successfully downloaded from HuggingFace Hub, running real tabular inference.
+- **Fallback Handling**: Agar TabPFN token missing ya unauthenticated ho to UI aur API saaf batate hain ("TabPFN unavailable"), aur active model ka naam response mein "RandomForest (Fallback: TabPFN unavailable)" ke roop mein return hota hai. Token maujood hone par direct "TabPFN (Prior Labs Foundation Model)" active rehta hai.
 
 ### Gemma (`backend/gemma_engine.py`)
 - **Target model**: Local Ollama (`gemma3:latest`) on `http://127.0.0.1:11434`.
